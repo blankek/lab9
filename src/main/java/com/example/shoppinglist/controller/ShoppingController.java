@@ -9,7 +9,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/items")
-@CrossOrigin
 public class ShoppingController {
     private final ShoppingService service;
 

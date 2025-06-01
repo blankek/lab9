@@ -20,20 +20,29 @@ function loadItems() {
             list.innerHTML = '';
             items.forEach(item => {
                 const li = document.createElement('li');
-                li.textContent = item.name;
+                li.setAttribute('data-id', item.id);
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = item.name;
                 if (item.purchased) {
-                    li.style.textDecoration = 'line-through';
+                    nameSpan.style.textDecoration = 'line-through';
                 }
 
                 const doneBtn = document.createElement('button');
                 doneBtn.textContent = '✓';
+                doneBtn.className = 'done-btn'; // для стилизации
                 doneBtn.onclick = () => markPurchased(item.id);
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.textContent = 'Удалить';
+                deleteBtn.className = 'delete-btn'; // для стилизации
                 deleteBtn.onclick = () => deleteItem(item.id);
 
-                li.append(' ', doneBtn, deleteBtn);
+                const buttonContainer = document.createElement('span');
+                buttonContainer.className = 'button-group';
+                buttonContainer.append(doneBtn, deleteBtn);
+
+                li.append(nameSpan, buttonContainer);
                 list.appendChild(li);
             });
         });
@@ -42,7 +51,7 @@ function loadItems() {
 function addItem(name) {
     fetch(API_URL, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name })
     }).then(() => {
         document.getElementById('itemName').value = '';
@@ -58,6 +67,7 @@ function deleteItem(id) {
 
 function markPurchased(id) {
     fetch(`${API_URL}/${id}/purchase`, {
-        method: 'PUT'
-    }).then(() => loadItems());
+        method: 'PATCH'
+    }).then(() => loadItems()); // Обновит весь список, и зачеркнет то, что пришло с purchased: true
 }
+
